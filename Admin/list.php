@@ -4,7 +4,7 @@ $session_name = $_SESSION['admin'];
 if ($session_name == "") {
   header("Location: admin.php");
 }
-$folder = '../TextFiles/';
+$folder = '/var/www/html/mdadil/curdyt/TextFiles/';
 $fileCount = count(glob($folder . '*'));
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $oldName = $_POST['old_name'];
@@ -14,8 +14,8 @@ $fileCount = count(glob($folder . '*'));
             } else {
                 echo '<span style="color: red;">Error Renaming file.</span>';
             }
-            
-        } 
+
+        }
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ $fileCount = count(glob($folder . '*'));
 
 <head>
     <title>Files List</title>
-    <link rel="icon" href="../favicon.jpg" type="image/jpeg">
+    <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -33,11 +33,11 @@ $fileCount = count(glob($folder . '*'));
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <style>
-   
+
     table {
         width: 100%;
         border-collapse: collapse;
-        
+
     }
     th, td {
         padding: 8px;
@@ -47,12 +47,12 @@ $fileCount = count(glob($folder . '*'));
     th {
         background-color: #f2f2f2;
     }
-  
+
     .table-container {
-        max-height: 550px; 
-        overflow-y: auto; 
+        max-height: 550px;
+        overflow-y: auto;
     }
-   
+
     .fixed-header {
         position: sticky;
         top: 0;
@@ -62,9 +62,18 @@ $fileCount = count(glob($folder . '*'));
 </head>
 
 <body class='text-center'>
+<div class="d-flex justify-content-between p-2">
+    <span class="text-center">MY NOTES { <?= $fileCount; ?> }</span>
+
+    <input class="form-control w-25"
+           type="search"
+           id="search-input"
+           autocomplete="off"
+           placeholder="🔎 Search files..." />
+</div>
+
 <div class="table-container">
 
-    <h2>MY NOTES { <?= $fileCount; ?> }</h2>
     <table class=" table table-striped table-hover table-bordered ">
     <thead class="fixed-header">
         <tr >
@@ -75,14 +84,14 @@ $fileCount = count(glob($folder . '*'));
     </thead>
         <?php
         $files = scandir($folder);
-        $serialNumber = 1; 
-        
+        $serialNumber = 1;
+
         foreach ($files as $file) {
              if (is_file($folder . $file)) {
                 if ($file !== '.' && $file !== '..') {
                     echo '<form method="post">';
                 echo '<tr>';
-                echo '<td>' . $serialNumber . '</td>'; 
+                echo '<td>' . $serialNumber . '</td>';
                 echo '<td>';
                 echo '<label><input title="Rename-file" type="checkbox" name="file[]" value="' . $file . '"> ' . $file . '</label>';
                 echo '<div style="display:none;" id="' . $file . '_rename">';
@@ -102,17 +111,17 @@ $fileCount = count(glob($folder . '*'));
                 echo '<option value="xlsx">XLSX</option>';
                 echo '</select>';
                 echo '<input type="hidden" name="old_name" value="' . $file . '">';
-                echo '<button class="bg-success p-0" type="submit" title="Save file"><i class="fa fa-check text-light"></i></button>';                
+                echo '<button class="bg-success p-0" type="submit" title="Save file"><i class="fa fa-check text-light"></i></button>';
                 echo '</div>';
                 echo '</td>';
                 echo '<td>';
-                echo '<a class="btn btn-secondary fa fa-eye" title="view-file" href="../TextFiles/' . urlencode($file) . '"></a>&nbsp;';
+                echo '<a class="btn btn-secondary fa fa-eye" title="view-file" href="/mdadil/curdyt/TextFiles/' . urlencode($file) . '"></a>&nbsp;';
                 echo '<a class="btn btn-primary fa fa-edit" title="Edit-file" href="list_edit.php?file=' . urlencode($file) . '"></a>&nbsp;';
-                echo '<a class="btn btn-success fa fa-download" title="Download-file" href="../TextFiles/' . urlencode($file) . '" download></a>&nbsp;';
+                echo '<a class="btn btn-success fa fa-download" title="Download-file" href="/mdadil/curdyt/TextFiles/' . urlencode($file) . '" download></a>&nbsp;';
                 echo '<a class="btn btn-danger fa fa-trash" title="Delete-file" href="delete_list.php?file=' . urlencode($file) . '" onclick="confirmDeletion(event, \'' . addslashes(urlencode($file)) . '\')"></a>';
-                
+
                 echo '</tr>';
-                $serialNumber++; 
+                $serialNumber++;
 
                 echo '</form>';
                 echo '<script>
@@ -140,11 +149,11 @@ $fileCount = count(glob($folder . '*'));
         <script>
 
 $(document).ready(function(){
-       
+
        $("tbody").before(headerClone);
    });
 function confirmDeletion(event, file) {
-    event.preventDefault(); 
+    event.preventDefault();
     swal({
         title: "Delete file?",
         text: "Are you sure you want to delete this file?",
@@ -153,11 +162,22 @@ function confirmDeletion(event, file) {
         dangerMode: true,
     }).then((willDelete) => {
         if (willDelete) {
-          
+
             window.location.href = 'delete_list.php?file=' + encodeURIComponent(file);
         }
     });
 }
+$(document).ready(function () {
+
+    $("#search-input").on("keyup", function () {
+        let value = $(this).val().toLowerCase();
+
+        $("table tbody tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+});
 
 </script>
 
