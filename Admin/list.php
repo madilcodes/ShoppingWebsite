@@ -4,7 +4,7 @@ $session_name = $_SESSION['admin'];
 if ($session_name == "") {
   header("Location: admin.php");
 }
-$folder = '/var/www/html/mdadil/curdyt/TextFiles/';
+$folder = '/var/www/html/TextFiles/';
 $fileCount = count(glob($folder . '*'));
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $oldName = $_POST['old_name'];
